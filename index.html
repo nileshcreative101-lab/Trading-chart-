@@ -2,66 +2,59 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nilesh Auto Signal</title>
+<title>Nilesh Indian PRO</title>
 <style>
-body{margin:0;font-family:Arial;background:#0e0e10;color:#fff}
-.header{padding:12px;text-align:center;background:#1a1a1d;border-bottom:2px solid #2962ff}
-.buy{background:#00c853;color:white;padding:12px;border-radius:8px;font-size:20px;font-weight:bold;text-align:center;margin:10px;animation:blink 1s infinite}
-.sell{background:#ff1744;color:white;padding:12px;border-radius:8px;font-size:20px;font-weight:bold;text-align:center;margin:10px}
-@keyframes blink{50%{opacity:0.5}}
-.card{background:#1e1e21;border-radius:10px;padding:10px;margin:10px}
-select{width:95%;padding:10px;border-radius:8px;background:#2962ff;color:white;border:none;font-size:16px}
+body{margin:0;background:#0e0e10;color:white;font-family:Arial}
+.top{padding:10px;background:#1a1a1d;text-align:center;border-bottom:2px solid #2962ff}
+select{width:95%;padding:12px;background:#2962ff;color:white;border:none;border-radius:8px;font-size:18px;font-weight:bold}
+.signal{margin:10px;padding:15px;border-radius:10px;text-align:center;font-size:20px;font-weight:bold}
+.buy{background:#00c853} .sell{background:#ff1744} .hold{background:#ffab00;color:black}
 </style>
 </head>
 <body>
-<div class="header">
-<h2 style="color:#2962ff;margin:5px">📈 Nilesh AUTO BUY/SELL</h2>
-<select id="stock" onchange="updateChart()">
-<option value="NSE:NIFTY">NIFTY 50</option>
+<div class="top">
+<h2 style="margin:5px;color:#2962ff">📈 Nilesh NSE PRO</h2>
+<select id="stk" onchange="load(this.value)">
 <option value="NSE:RELIANCE">RELIANCE</option>
+<option value="NSE:NIFTY">NIFTY 50</option>
+<option value="NSE:BANKNIFTY">BANKNIFTY</option>
 <option value="NSE:TCS">TCS</option>
 <option value="NSE:INFY">INFOSYS</option>
 <option value="NSE:SBIN">SBIN</option>
+<option value="NSE:HDFCBANK">HDFC BANK</option>
 </select>
 </div>
 
-<div id="signalBox" class="buy">🔍 Analyzing...</div>
-
-<div class="card"><div id="chart" style="height:500px"></div></div>
-
-<div class="card">
-<h3>📊 Indicator Logic</h3>
-<p id="logic">RSI + EMA + MACD se signal ban raha hai...</p>
-<small style="color:gray">*Ye educational ke liye hai, trading se pehle khud research karein</small>
-</div>
+<div id="sig" class="signal buy">✅ STRONG BUY - RELIANCE</div>
+<div id="tv" style="height:600px"></div>
 
 <script src="https://s3.tradingview.com/tv.js"></script>
 <script>
-let prices=[];
-function loadChart(sym){
-document.getElementById('chart').innerHTML='';
-new TradingView.widget({autosize:true,symbol:sym,interval:"5",timezone:"Asia/Kolkata",theme:"dark",style:"1",locale:"in",height:500,container_id:"chart"});
-generateSignal();
+function load(sym){
+document.getElementById('tv').innerHTML='';
+document.getElementById('sig').innerHTML='🔄 Loading '+sym+'...';
+new TradingView.widget({
+"container_id":"tv",
+"autosize":true,
+"symbol":sym,
+"interval":"5",
+"timezone":"Asia/Kolkata",
+"theme":"dark",
+"style":"1",
+"locale":"in",
+"withdateranges":true,
+"allow_symbol_change":false,
+"height":600
+});
+setTimeout(()=>{
+let r=Math.random();
+let el=document.getElementById('sig');
+if(r>0.6){el.className='signal buy'; el.innerHTML='✅ STRONG BUY - '+sym+' Upar Jayega';}
+else if(r<0.35){el.className='signal sell'; el.innerHTML='❌ STRONG SELL - '+sym+' Neeche Ayega';}
+else{el.className='signal hold'; el.innerHTML='⚠️ HOLD - '+sym+' Wait Karo';}
+},1000);
 }
-function generateSignal(){
-let r = Math.random();
-let box = document.getElementById('signalBox');
-let logic = document.getElementById('logic');
-if(r > 0.6){
-box.className='buy'; box.innerHTML='✅ STRONG BUY - Upar jayega';
-logic.innerHTML='EMA 50 > EMA 200 | RSI: 58 | MACD Positive | Trend: BULLISH';
-}else if(r < 0.4){
-box.className='sell'; box.innerHTML='❌ STRONG SELL - Neeche ayega';
-logic.innerHTML='EMA 50 < EMA 200 | RSI: 72 | MACD Negative | Trend: BEARISH';
-}else{
-box.className='card'; box.style.textAlign='center'; box.style.background='#ffab00'; box.style.color='black';
-box.innerHTML='⚠️ HOLD / WAIT - Sideways';
-logic.innerHTML='RSI: 49 | Market Confused | Best to WAIT';
-}
-}
-function updateChart(){loadChart(document.getElementById('stock').value);}
-loadChart("NSE:NIFTY");
-setInterval(generateSignal, 10000);
+load("NSE:RELIANCE");
 </script>
 </body>
 </html>
