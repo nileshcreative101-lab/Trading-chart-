@@ -2,59 +2,57 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nilesh Indian PRO</title>
+<title>Nilesh Select Chart</title>
 <style>
 body{margin:0;background:#0e0e10;color:white;font-family:Arial}
-.top{padding:10px;background:#1a1a1d;text-align:center;border-bottom:2px solid #2962ff}
-select{width:95%;padding:12px;background:#2962ff;color:white;border:none;border-radius:8px;font-size:18px;font-weight:bold}
-.signal{margin:10px;padding:15px;border-radius:10px;text-align:center;font-size:20px;font-weight:bold}
-.buy{background:#00c853} .sell{background:#ff1744} .hold{background:#ffab00;color:black}
+.header{background:#1e1e21;padding:15px;text-align:center}
+select{width:98%;padding:14px;font-size:18px;background:#2962ff;color:white;border:none;border-radius:8px;font-weight:bold}
+#box{padding:12px;text-align:center;font-size:18px;font-weight:bold;margin:10px;border-radius:8px;background:#00c853}
 </style>
 </head>
 <body>
-<div class="top">
-<h2 style="margin:5px;color:#2962ff">📈 Nilesh NSE PRO</h2>
-<select id="stk" onchange="load(this.value)">
+
+<div class="header">
+<h3 style="margin:0 0 10px 0;color:#2962ff">📈 Select Any Indian Stock</h3>
+<select id="mySymbol" onchange="showChart()">
 <option value="NSE:RELIANCE">RELIANCE</option>
-<option value="NSE:NIFTY">NIFTY 50</option>
-<option value="NSE:BANKNIFTY">BANKNIFTY</option>
 <option value="NSE:TCS">TCS</option>
 <option value="NSE:INFY">INFOSYS</option>
-<option value="NSE:SBIN">SBIN</option>
+<option value="NSE:SBIN">SBIN Bank</option>
 <option value="NSE:HDFCBANK">HDFC BANK</option>
+<option value="NSE:ICICIBANK">ICICI BANK</option>
+<option value="NSE:NIFTY">NIFTY 50</option>
+<option value="NSE:BANKNIFTY">BANK NIFTY</option>
+<option value="NSE:TATAMOTORS">TATA MOTORS</option>
+<option value="NSE:ITC">ITC</option>
 </select>
 </div>
 
-<div id="sig" class="signal buy">✅ STRONG BUY - RELIANCE</div>
-<div id="tv" style="height:600px"></div>
+<div id="box">Loading RELIANCE...</div>
+<div id="chartBox" style="height:600px"></div>
 
 <script src="https://s3.tradingview.com/tv.js"></script>
 <script>
-function load(sym){
-document.getElementById('tv').innerHTML='';
-document.getElementById('sig').innerHTML='🔄 Loading '+sym+'...';
-new TradingView.widget({
-"container_id":"tv",
-"autosize":true,
-"symbol":sym,
-"interval":"5",
-"timezone":"Asia/Kolkata",
-"theme":"dark",
-"style":"1",
-"locale":"in",
-"withdateranges":true,
-"allow_symbol_change":false,
-"height":600
-});
-setTimeout(()=>{
-let r=Math.random();
-let el=document.getElementById('sig');
-if(r>0.6){el.className='signal buy'; el.innerHTML='✅ STRONG BUY - '+sym+' Upar Jayega';}
-else if(r<0.35){el.className='signal sell'; el.innerHTML='❌ STRONG SELL - '+sym+' Neeche Ayega';}
-else{el.className='signal hold'; el.innerHTML='⚠️ HOLD - '+sym+' Wait Karo';}
-},1000);
+function showChart(){
+  var sym = document.getElementById("mySymbol").value;
+  document.getElementById("chartBox").innerHTML = "";
+  document.getElementById("box").innerHTML = "📊 Showing: " + sym;
+  
+  new TradingView.widget({
+    "container_id": "chartBox",
+    "autosize": true,
+    "symbol": sym,
+    "interval": "5",
+    "timezone": "Asia/Kolkata",
+    "theme": "dark",
+    "style": "1",
+    "locale": "in",
+    "height": 600
+  });
 }
-load("NSE:RELIANCE");
+// First time load
+showChart();
 </script>
+
 </body>
 </html>
