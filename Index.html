@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live Trading Signals</title>
+<style>
+body{background:#0e0e10;color:white;font-family:Arial;text-align:center;margin:0}
+.header{padding:15px;background:#1e1e1e;font-size:20px;font-weight:bold}
+#signal-box{padding:20px;margin:15px;border-radius:12px;font-size:26px;font-weight:bold}
+.buy{background:#00c853; color:white; animation: blink 1s infinite}
+.sell{background:#d50000; color:white; animation: blink 1s infinite}
+.wait{background:#ffab00; color:black}
+@keyframes blink{50%{opacity:0.6}}
+</style>
+</head>
+<body>
+<div class="header">📈 My Live Trading Chart - NIFTY / BTC</div>
+
+<div id="signal-box" class="wait">SIGNAL LOADING...</div>
+
+<!-- TradingView Chart -->
+<div class="tradingview-widget-container" style="height:600px">
+  <div id="tradingview_chart" style="height:600px"></div>
+  <script src="https://s.tradingview.com/tv.js"></script>
+  <script>
+    new TradingView.widget({
+      "autosize": true,
+      "symbol": "BINANCE:BTCUSDT", // Yaha NSE:NIFTY likh sakte ho
+      "interval": "5",
+      "timezone": "Asia/Kolkata",
+      "theme": "dark",
+      "style": "1",
+      "container_id": "tradingview_chart"
+    });
+  </script>
+</div>
+
+<script>
+// SIMPLE BUY/SELL LOGIC - Bina Python ke
+async function getSignal(){
+  try{
+    // Binance se live price le rahe hai (Free API)
+    let res = await fetch('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=5m&limit=50');
+    let data = await res.json();
+    let closes = data.map(c => parseFloat(c[4]));
+    let lastPrice = closes[closes.length-1];
+
+    // EMA 50 nikalo
+    let ema = closes.slice(-20).reduce((a,b)=>a+b)/20;
+
+    // RSI nikalo (simple)
+    let gains=0, losses=0;
+    for(let i=closes.length-14; i<closes.length-1; i++){
+      let diff = closes[i+1]-closes[i];
+      if(diff>=0) gains+=diff; else losses-=diff;
+    }
+    let rsi = 100 - (100 / (1 + (gains/14)/(losses/14 || 1)));
+
+    let box = document.getElementById('signal-box');
+    if(rsi < 35 && lastPrice > ema){
+      box.className = 'buy'; box.innerHTML = '🚀 STRONG BUY - Price: ' + lastPrice.toFixed(2) + ' | RSI: ' + rsi.toFixed(1);
+    } else if(rsi > 70 && lastPrice < ema){
+      box.className = 'sell'; box.innerHTML = '🔻 STRONG SELL - Price: ' + lastPrice.toFixed(2) + ' | RSI: ' + rsi.toFixed(1);
+    } else {
+      box.className = 'wait'; box.innerHTML = '⏳ WAIT - Price: ' + lastPrice.toFixed(2) + ' | RSI: ' + rsi.toFixed(1);
+    }
+  } catch(e){
+    document.getElementById('signal-box').innerHTML = 'Chart Live hai, Signal BTC pe hai. NIFTY ke liye Symbol badlo';
+  }
+}
+getSignal();
+setInterval(getSignal, 10000); // Har 10 sec me update
+</script>
+</body>
+</html>
